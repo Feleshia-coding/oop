@@ -1,0 +1,56 @@
+#ifndef ARRAY_CLASS
+#define ARRAY_CLASS
+using namespace std;
+#include <iostream>
+#include <cstdlib>
+#ifndef NULL
+const int NULL = 0;
+#endif  // NULL
+enum ErrorType  
+ { invalidArraySize, memoryAllocationError, 
+    indexOutOfRange };
+char *errorMsg[] =
+{   "Invalid array size", "Memory allocation error",
+    "Invalid index: "
+};
+template <class T> 
+class Array
+{  private:
+        T*  alist; 
+        int size;   
+        void Error(ErrorType error,int badIndex=0) const;
+    public:
+        Array(int sz = 50);   
+        Array(const Array<T>& A);   
+        ~Array(void);   
+        Array<T>& operator= (const Array<T>& rhs); 
+        T& operator[](int i);  
+        operator T* (void) const;
+        int ListSize(void) const;   
+        void Resize(int sz);        
+};
+// 构造函数
+template <class T>
+Array<T>::Array(int sz)
+{
+    if (sz <= 0)   
+        //sz为数组大小（元素个数），若小于0，则输出错误信息
+        Error(invalidArraySize);
+ 
+    size = sz;   // 将元素个数赋值给变量size
+    alist = new T[size];    //动态分配size个T类型的元素空间
+    if (alist == NULL)   //如果分配内存不成功，输出错误信息
+        Error(memoryAllocationError);
+}
+template <class T>
+Array<T>::Array(const Array<T>& X)
+{
+    int n = X.size; 
+    size = n;
+    alist = new T[n];    
+    if (alist == NULL) Error(memoryAllocationError);
+    T* srcptr = X.alist;    // X.alist是对象X的数组首地址
+    T* destptr = alist;    // alist是本对象中的数组首地址
+    while (n--)             // 逐个复制数组元素
+        *destptr++ = *srcptr++;
+}
